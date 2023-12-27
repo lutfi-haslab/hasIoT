@@ -1,0 +1,91 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Dashboard {
+  id        String   @id
+  name      String
+  userId    Int?
+  createdAt DateTime @default(now())
+  layouts   Json?
+  User      User?    @relation(fields: [userId], references: [id])
+  Widget    Widget[]
+}
+
+model Data {
+  id         String       @id
+  rawData    String?
+  jsonData   Json?
+  deviceId   String?
+  createdAt  DateTime     @default(now())
+  Device     Device?      @relation(fields: [deviceId], references: [id])
+  DataFormat DataFormat[]
+}
+
+model DataFormat {
+  id        String   @id
+  key       String
+  value     Int?
+  unit      String
+  deviceId  String
+  dataId    String
+  createdAt DateTime @default(now())
+  Data      Data     @relation(fields: [dataId], references: [id])
+}
+
+model Device {
+  id         String   @id
+  name       String
+  deviceType String
+  location   String?
+  altitude   String?
+  latitude   String?
+  parser     String?
+  userId     Int
+  createdAt  DateTime @default(now())
+  Data       Data[]
+  User       User     @relation(fields: [userId], references: [id])
+}
+
+model Post {
+  id        Int      @id @default(autoincrement())
+  title     String
+  content   String?
+  published Boolean? @default(false)
+  authorId  Int?
+  User      User?    @relation(fields: [authorId], references: [id])
+}
+
+model User {
+  id        Int         @id @default(autoincrement())
+  email     String      @unique
+  name      String?
+  createdAt DateTime    @default(now())
+  Dashboard Dashboard[]
+  Device    Device[]
+  Post      Post[]
+}
+
+model Widget {
+  id           String     @id
+  name         String
+  type         String
+  minValue     Int?
+  maxValue     Int?
+  minThreshold Int?
+  maxThreshold Int?
+  dashboardId  String?
+  source       Json?
+  createdAt    DateTime   @default(now())
+  style        Json?
+  height       Int?
+  width        Int?
+  x            Int?
+  y            Int?
+  Dashboard    Dashboard? @relation(fields: [dashboardId], references: [id])
+}
