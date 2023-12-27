@@ -1,7 +1,6 @@
 import { create } from "zustand";
 import { v4 as uuid } from "uuid";
 import { persist } from "zustand/middleware";
-import { Column } from "@/components/kanban/board-column";
 import { UniqueIdentifier } from "@dnd-kit/core";
 
 export type Status = "TODO" | "IN_PROGRESS" | "DONE";
@@ -11,7 +10,7 @@ const defaultCols = [
     id: "TODO" as const,
     title: "Todo",
   },
-] satisfies Column[];
+] satisfies any[];
 
 export type ColumnId = (typeof defaultCols)[number]["id"];
 
@@ -24,7 +23,7 @@ export type Task = {
 
 export type State = {
   tasks: Task[];
-  columns: Column[];
+  columns: any[];
   draggedTask: string | null;
 };
 
@@ -35,7 +34,7 @@ export type Actions = {
   removeTask: (title: string) => void;
   removeCol: (id: UniqueIdentifier) => void;
   setTasks: (updatedTask: Task[]) => void;
-  setCols: (cols: Column[]) => void;
+  setCols: (cols: any[]) => void;
   updateCol: (id: UniqueIdentifier, newName: string) => void;
 };
 
@@ -81,7 +80,7 @@ export const useTaskStore = create<State & Actions>()(
           columns: state.columns.filter((col) => col.id !== id),
         })),
       setTasks: (newTasks: Task[]) => set({ tasks: newTasks }),
-      setCols: (newCols: Column[]) => set({ columns: newCols }),
+      setCols: (newCols: any[]) => set({ columns: newCols }),
     }),
     { name: "task-store", skipHydration: true },
   ),
